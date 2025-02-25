@@ -3,16 +3,21 @@ const express = require("express")
 
 const app = express()
 
-app.use("/hello",(req,res) => {
-    res.send("Hello from Hello page")
+app.get("/user",(req,res) => {
+    console.log(req.query)
+    res.send({firstname: "Karthik", lastname: "Narayanan"})
+})
+
+app.post("/user",(req,res) => {
+    res.send("Data saved successfully saved to the DB")
+})
+
+app.delete("/user",(req,res) => {
+    res.send("Deleted successfully")
 })
 
 app.use("/test",(req,res) => {
     res.send("Hello from test page")
-})
-
-app.use((req,res) => {
-    res.send("Hello from the main server");
 })
 
 app.listen(3000, () => {
