@@ -1,34 +1,25 @@
-// import express from "express";
-const express = require("express")
+import express from "express";
+// const express = require("express")
 
 const app = express()
 
-app.get("/user",
-    (req,res,next) => {
-        console.log("Handling Route 1..")
-        // res.send("1st response")
-        next()
-    },
-    (req,res,next) => {
-        console.log("Handling Route 2..")
-        // res.send("2nd response")
-        next()
-    },
-    (req,res,next) => {
-        console.log("Handling Route 3..")
-        // res.send("3rd response")
-        next()
-    },
-    (req,res,next) => {
-        console.log("Handling Route 4..")
-        // res.send("4th response")
-        next()
-    },
-    (req,res,next) => {
-        console.log("handling Route 5..")
-        res.send("5th response")
-    }
-)
+import { adminAuth, userAuth } from "../middlewares/authMiddleware.js";
+
+app.get("/user/login",(req,res) => {
+    res.send("User Logged In Successfully")
+})
+
+app.get("/user/data", userAuth, (req,res) => {
+    res.send("User Data sent")
+})
+
+app.get("/admin/getAllData", adminAuth, (req,res) => {
+    res.send("All Data Sent..")
+})
+
+app.get("/admin/deleteUser", adminAuth, (req,res) => {
+    res.send("Deleted a user..")
+})
 
 app.listen(3000, () => {
     console.log("Server is successfully running on Port 3000");
