@@ -18,6 +18,7 @@ app.post("/signup",async (req,res) => {
     }
 })
 
+// Get user by email
 app.get("/user", async (req,res) => {
     try{
         const userEmail = req.body.emailId
@@ -46,10 +47,44 @@ app.get("/user", async (req,res) => {
     // }
 })
 
+// Feed API - GET /feed - get all the users from the database
 app.get("/feed",async (req,res) => {
     try{
         const users = await User.find({})
         res.send(users)
+    } catch(err) {
+        res.status(400).send("Somethin went wrong!")
+    }
+})
+
+// Detele a user from the database
+app.delete("/user",async (req,res) => {
+    const userId = req.body.userId
+    try {
+        const user = await User.findByIdAndDelete(userId)
+        if(!user) {
+            res.status(404).send("user not found")
+        }
+        else {
+            res.send("User Deleted Successfully!")
+        }
+    } catch(err) {
+        res.status(400).send("Somethin went wrong!")
+    }
+})
+
+// Update data of the user
+app.patch("/user",async (req,res) => {
+    const userId = req.body.userId
+    const data = req.body
+    try {
+        const user = await User.findByIdAndUpdate(userId,data)
+        if(!user){
+            res.status(404).send("user not found")
+        }
+        else {
+            res.send("User Updated Successfully!")
+        }
     } catch(err) {
         res.status(400).send("Somethin went wrong!")
     }
