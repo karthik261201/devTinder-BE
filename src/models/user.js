@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import validator from "validator";
 
 const UserSchema = new mongoose.Schema({
     firstName: {
@@ -9,6 +10,11 @@ const UserSchema = new mongoose.Schema({
     },
     lastName: {
         type: String,
+        validate(value) {
+            if(!validator.isEmail(value)) {
+                throw new Error("invalid email")
+            }
+        }
     },
     emailId: {
         type: String,
@@ -35,7 +41,12 @@ const UserSchema = new mongoose.Schema({
     },
     photoUrl: {
         type: String,
-        default: "https://www.pnrao.com/wp-content/uploads/2023/06/dummy-user-male.jpg"
+        default: "https://www.pnrao.com/wp-content/uploads/2023/06/dummy-user-male.jpg",
+        validate(value) {
+            if(!validator.isURL(value)) {
+                throw new Error("invalid url")
+            }
+        }
     },
     about: {
         type: String,
