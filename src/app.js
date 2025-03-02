@@ -1,5 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt"
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken"
 // const express = require("express")
 import { connectDB } from "./config/database.js";
 import User from "./models/user.js";
@@ -9,8 +11,9 @@ import validator from "validator";
 const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
 
-app.post("/signup",async (req,res) => {
+app.post("/signup", async (req,res) => {
     try {
         // validate signup date
         validateSignUpData(req)
@@ -35,7 +38,7 @@ app.post("/signup",async (req,res) => {
     }
 })
 
-app.post("/login",async (req,res) => {
+app.post("/login", async (req,res) => {
     try{
         const { emailId, password } = req.body
         const isEmailValid = validator.isEmail(emailId)
@@ -48,11 +51,33 @@ app.post("/login",async (req,res) => {
         }
         const isPasswordValid = await bcrypt.compare(password,user.password)
         if(isPasswordValid) {
+            // create JWT token 
+            const token  = jwt.sign({_id:user._id},"DEV@Connect$777")
+            res.cookie("token",token)
             res.send("Login Successful!")
         }
         else {
             throw new Error("invalid credentials")
         }
+    }catch(err) {
+        res.status(400).send("ERROR: "+err.message)
+    }
+})
+
+app.get("/profile", async (req,res) => {
+    try {
+        const cookies = req.cookies
+        const { token } = cookies
+        if(!token) {
+            throw new Error("invalid token")
+        }
+        const decodedMessage = await jwt.verify(token,"DEV@Connect$777")
+        const { _id } = decodedMessage
+        const user = await User.findById(_id)
+        if(!user) {
+            throw new Error("user does not exist")
+        }
+        res.send(user)
     }catch(err) {
         res.status(400).send("ERROR: "+err.message)
     }
@@ -88,7 +113,7 @@ app.get("/user", async (req,res) => {
 })
 
 // Feed API - GET /feed - get all the users from the database
-app.get("/feed",async (req,res) => {
+app.get("/feed", async (req,res) => {
     try{
         const users = await User.find({})
         res.send(users)
@@ -98,7 +123,7 @@ app.get("/feed",async (req,res) => {
 })
 
 // Detele a user from the database
-app.delete("/user",async (req,res) => {
+app.delete("/user", async (req,res) => {
     const userId = req.body.userId
     try {
         const user = await User.findByIdAndDelete(userId)
@@ -114,7 +139,7 @@ app.delete("/user",async (req,res) => {
 })
 
 // Update data of the user
-app.patch("/user/:userId",async (req,res) => {
+app.patch("/user/:userId", async (req,res) => {
     const userId = req.params?.userId
     const data = req.body
     try {
