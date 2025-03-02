@@ -1,7 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt"
 import cookieParser from "cookie-parser";
-import jwt from "jsonwebtoken"
 // const express = require("express")
 import { connectDB } from "./config/database.js";
 import User from "./models/user.js";
@@ -51,10 +50,10 @@ app.post("/login", async (req,res) => {
         if(!user) {
             throw new Error("invalid credentials")
         }
-        const isPasswordValid = await bcrypt.compare(password,user.password)
+        const isPasswordValid = await user.validatePassword(password)
         if(isPasswordValid) {
             // create JWT token 
-            const token  = jwt.sign({_id:user._id},"DEV@Connect$777")
+            const token  = await user.getJWT()
             res.cookie("token",token)
             res.send("Login Successful!")
         }
