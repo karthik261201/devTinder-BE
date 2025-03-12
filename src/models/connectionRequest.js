@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const ConnectionRequestSchema = new mongoose.Schema({
     fromUserId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: "User", // reference to user collection
         required: true
     },
     toUserId: {

@@ -6,6 +6,7 @@ import { connectDB } from "./config/database.js";
 import authRouter from "./routes/authRouter.js";
 import profileRouter from "./routes/profileRouter.js";
 import requestRouter from "./routes/requestRouter.js";
+import userRouter from "./routes/userRouter.js";
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(cookieParser())
 app.use("/",authRouter)
 app.use("/",profileRouter)
 app.use("/",requestRouter)
+app.use("/",userRouter)
 
 connectDB().then(() => {
     console.log("DB connected successfully")
